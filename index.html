@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ampère's Circuital Law (∮ H · dℓ = I_enc) · by Dr. Nitin Phadkule</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #020617;
+      color: #f8fafc;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
+    header {
+      background: #0f172a;
+      border-bottom: 1px solid #1e293b;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #38bdf8;
+      font-size: 20px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-title {
+      font-weight: 800;
+      font-size: 16px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-subtitle {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .brand-subtitle strong {
+      color: #38bdf8;
+    }
+    .badge {
+      font-size: 11px;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+    }
+    .main-container {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 61px);
+      overflow: hidden;
+    }
+    .canvas-pane {
+      flex: 1;
+      position: relative;
+      background: #020617;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+    canvas:active {
+      cursor: grabbing;
+    }
+    .control-pane {
+      width: 380px;
+      background: #0f172a;
+      border-left: 1px solid #1e293b;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .card {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .formula-box {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 8px 0;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 6px;
+    }
+    .stat-val {
+      font-weight: 700;
+      color: #34d399;
+      font-size: 15px;
+    }
+    .btn {
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      text-align: left;
+    }
+    .btn:hover {
+      background: #334155;
+      border-color: #475569;
+    }
+    .preset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .hud-overlay {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+    .hud-btn {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #1e293b;
+      color: #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+    }
+    .hud-btn:hover {
+      color: #ffffff;
+      background: #1e293b;
+    }
+    .tip-bar {
+      position: absolute;
+      bottom: 12px;
+      right: 16px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid #1e293b;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      color: #94a3b8;
+      pointer-events: none;
+    }
+    input[type=range] {
+      width: 100%;
+      accent-color: #10b981;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-wrap">
+      <div class="brand-icon">∮</div>
+      <div class="brand-text">
+        <div class="brand-title">
+          <span>Ampère's Circuital Law</span>
+          <span style="font-family:'JetBrains Mono', monospace; font-size:13px; color:#38bdf8; background:rgba(6,182,212,0.1); padding:2px 6px; border-radius:4px; border:1px solid rgba(6,182,212,0.25);">∮ H · dℓ = I_enc</span>
+        </div>
+        <div class="brand-subtitle">
+          Created by <strong>Dr. Nitin Phadkule</strong>
+        </div>
+      </div>
+    </div>
+    <div class="badge">∮ H · dℓ in Pure Amperes (A)</div>
+  </header>
+
+  <div class="main-container">
+    <div class="canvas-pane">
+      <div class="hud-overlay">
+        <button class="hud-btn" id="btnCompass">🧭 Toggle Compass</button>
+        <button class="hud-btn" id="btnLoopDir">Direction: CCW ↺</button>
+        <button class="hud-btn" id="btnAddWire" style="background:#0284c7; color:#fff; border-color:#38bdf8;">+ Add Wire</button>
+      </div>
+
+      <canvas id="simCanvas"></canvas>
+
+      <div class="tip-bar">
+        💡 Drag the <strong>green loop</strong> or <strong>wires</strong> · Drag the <strong>compass</strong> anywhere
+      </div>
+    </div>
+
+    <div class="control-pane">
+      <div class="card">
+        <div class="card-title">The Principle (in terms of H)</div>
+        <p style="font-size: 12px; line-height: 1.5; color: #cbd5e1;">
+          Ampère's Law states that the line integral of Magnetic Field Intensity <strong style="color:#38bdf8;">H</strong> around any closed path directly equals the net enclosed current!
+        </p>
+        <div class="formula-box">
+          ∮ H · dℓ = I_enc
+        </div>
+        <p style="font-size: 11px; color: #94a3b8; line-height: 1.4;">
+          Units: [H] = A/m, [dℓ] = m ⟹ [H · dℓ] = <strong>Amperes (A)</strong>. Wires outside the loop cancel out to exactly 0 A.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Live Calculations</div>
+        <div class="stat-row">
+          <span style="color:#94a3b8;">1. Enclosed Current (I_enc):</span>
+          <span class="stat-val" id="valCurrent" style="color:#fbbf24;">+10.0 A</span>
+        </div>
+        <div class="stat-row" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3);">
+          <span style="color:#34d399; font-weight:700;">2. Total ∮ H · dℓ:</span>
+          <span class="stat-val" id="valIntegral" style="color:#34d399;">+10.00 A</span>
+        </div>
+        <div id="explainerText" style="font-size: 11px; color: #94a3b8; line-height: 1.4; margin-top: 8px;">
+          Enclosing +10.0 A gives a net circulation ∮ H · dℓ = +10.00 A.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Try 4 Quick Experiments</div>
+        <div class="preset-list">
+          <button class="btn" onclick="loadPreset('single')">
+            <span>1. Single Wire (+10A) ⟹ ∮ H·dℓ = +10 A</span>
+            <span style="color:#38bdf8;">→</span>
+          </button>
+          <button class="btn" onclick="loadPreset('dipole')">
+            <span>2. Opposite Wires (+10A &amp; -10A) ⟹ 0 A</span>
+            <span style="color:#38bdf8;">→</span>
+          </button>
+          <button class="btn" onclick="loadPreset('external')">
+            <span>3. Wire Outside Loop ⟹ 0 A</span>
+            <span style="color:#38bdf8;">→</span>
+          </button>
+          <button class="btn" onclick="loadPreset('parallel')">
+            <span>4. Two Same Wires (+5A &amp; +5A) ⟹ +10 A</span>
+            <span style="color:#38bdf8;">→</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Loop Size</div>
+        <div style="display:flex; justify-content:space-between; font-size:12px; color:#cbd5e1;">
+          <span>Radius:</span>
+          <span id="radiusLabel" style="color:#34d399; font-weight:700;">65 cm</span>
+        </div>
+        <input type="range" id="radiusSlider" min="20" max="140" value="65">
+      </div>
+
+      <div style="text-align:center; font-size:11px; color:#64748b; padding-top:4px;">
+        Curated &amp; Designed by <strong style="color:#94a3b8;">Dr. Nitin Phadkule</strong>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let wires = [
+      { id: 'w1', x: 0.0, y: 0.0, current: 10.0, label: 'Wire 1' },
+      { id: 'w2', x: 1.1, y: 0.2, current: -10.0, label: 'Wire 2' }
+    ];
+
+    let loop = {
+      x: 0.0,
+      y: 0.0,
+      radius: 0.65,
+      direction: 1 // 1 = CCW, -1 = CW
+    };
+
+    let compass = { x: 0.8, y: -0.6, visible: true };
+    let dragging = null;
+
+    let scale = 170;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    function resize() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = rect.height * window.devicePixelRatio;
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      offsetX = rect.width / 2;
+      offsetY = rect.height / 2;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function worldToScreen(x, y) {
+      return {
+        x: x * scale + offsetX,
+        y: -y * scale + offsetY
+      };
+    }
+
+    function screenToWorld(sx, sy) {
+      return {
+        x: (sx - offsetX) / scale,
+        y: -(sy - offsetY) / scale
+      };
+    }
+
+    function calcH(px, py) {
+      let hx = 0, hy = 0;
+      for (const w of wires) {
+        const dx = px - w.x;
+        const dy = py - w.y;
+        const r = Math.hypot(dx, dy);
+        if (r < 0.001) continue;
+        const R = 0.08;
+        let hMag = r < R ? (w.current * r) / (2 * Math.PI * R * R) : w.current / (2 * Math.PI * r);
+        hx += -hMag * (dy / r);
+        hy += hMag * (dx / r);
+      }
+      return { x: hx, y: hy, mag: Math.hypot(hx, hy) };
+    }
+
+    function updateMath() {
+      let enclosedCurrent = 0;
+      for (const w of wires) {
+        const dist = Math.hypot(w.x - loop.x, w.y - loop.y);
+        if (dist <= loop.radius) {
+          enclosedCurrent += w.current * loop.direction;
+        }
+      }
+
+      document.getElementById('valCurrent').textContent = (enclosedCurrent >= 0 ? '+' : '') + enclosedCurrent.toFixed(1) + ' A';
+      document.getElementById('valIntegral').textContent = (enclosedCurrent >= 0 ? '+' : '') + enclosedCurrent.toFixed(2) + ' A';
+
+      const expEl = document.getElementById('explainerText');
+      if (Math.abs(enclosedCurrent) < 0.01) {
+        expEl.textContent = 'Net current inside is 0 A. Therefore total ∮ H · dℓ = 0.00 A!';
+      } else {
+        expEl.textContent = 'Enclosing ' + (enclosedCurrent > 0 ? '+' : '') + enclosedCurrent.toFixed(0) + ' A gives a line integral ∮ H · dℓ = ' + (enclosedCurrent > 0 ? '+' : '') + enclosedCurrent.toFixed(2) + ' A.';
+      }
+    }
+
+    function render() {
+      const dpr = window.devicePixelRatio || 1;
+      const width = canvas.width / dpr;
+      const height = canvas.height / dpr;
+
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, width, height);
+
+      // Coordinate Grid
+      ctx.strokeStyle = 'rgba(30, 41, 59, 0.4)';
+      ctx.lineWidth = 1;
+      for (let x = -3; x <= 3; x += 0.5) {
+        const p1 = worldToScreen(x, -3);
+        const p2 = worldToScreen(x, 3);
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+      }
+      for (let y = -3; y <= 3; y += 0.5) {
+        const p1 = worldToScreen(-3, y);
+        const p2 = worldToScreen(3, y);
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+      }
+
+      // H-Field arrows (A/m)
+      const step = 40;
+      for (let px = step / 2; px < width; px += step) {
+        for (let py = step / 2; py < height; py += step) {
+          const wp = screenToWorld(px, py);
+          const h = calcH(wp.x, wp.y);
+          if (h.mag < 1e-6) continue;
+          const uHx = h.x / h.mag;
+          const uHy = -h.y;
+
+          ctx.save();
+          ctx.translate(px, py);
+          ctx.rotate(Math.atan2(uHy, uHx));
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+          ctx.lineWidth = 1.3;
+          ctx.beginPath();
+          ctx.moveTo(-6, 0); ctx.lineTo(6, 0); ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(6, 0); ctx.lineTo(2.5, -2); ctx.lineTo(2.5, 2); ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      // Amperian Loop (Green)
+      const lp = worldToScreen(loop.x, loop.y);
+      const lR = loop.radius * scale;
+
+      ctx.beginPath();
+      ctx.arc(lp.x, lp.y, lR, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+      ctx.fill();
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([7, 5]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Center handle
+      ctx.beginPath();
+      ctx.arc(lp.x, lp.y, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#10b981';
+      ctx.fill();
+
+      // Radius handle
+      const rh = worldToScreen(loop.x + loop.radius, loop.y);
+      ctx.beginPath();
+      ctx.arc(rh.x, rh.y, 8, 0, Math.PI * 2);
+      ctx.fillStyle = '#34d399';
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fill();
+
+      // Wires
+      for (const w of wires) {
+        const wp = worldToScreen(w.x, w.y);
+        const dist = Math.hypot(w.x - loop.x, w.y - loop.y);
+        const isInside = dist <= loop.radius;
+
+        if (isInside) {
+          ctx.beginPath();
+          ctx.arc(wp.x, wp.y, 24, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(245, 158, 11, 0.25)';
+          ctx.fill();
+          ctx.strokeStyle = '#fbbf24';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        ctx.beginPath();
+        ctx.arc(wp.x, wp.y, 16, 0, Math.PI * 2);
+        ctx.fillStyle = w.current > 0 ? '#ea580c' : '#4f46e5';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        if (w.current > 0) {
+          ctx.beginPath();
+          ctx.arc(wp.x, wp.y, 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(wp.x - 5, wp.y - 5); ctx.lineTo(wp.x + 5, wp.y + 5);
+          ctx.moveTo(wp.x + 5, wp.y - 5); ctx.lineTo(wp.x - 5, wp.y + 5);
+          ctx.stroke();
+        }
+
+        const tagText = isInside
+          ? `${w.label}: ${w.current > 0 ? '+' : ''}${w.current}A [COUNTED ✅]`
+          : `${w.label}: ${w.current > 0 ? '+' : ''}${w.current}A [IGNORED ❌]`;
+
+        ctx.font = 'bold 11px sans-serif';
+        const tw = ctx.measureText(tagText).width + 12;
+        ctx.fillStyle = isInside ? '#f59e0b' : '#334155';
+        ctx.fillRect(wp.x - tw / 2, wp.y + 22, tw, 20);
+        ctx.fillStyle = isInside ? '#000' : '#fff';
+        ctx.textAlign = 'center';
+        ctx.fillText(tagText, wp.x, wp.y + 36);
+      }
+
+      // Compass
+      if (compass.visible) {
+        const cp = worldToScreen(compass.x, compass.y);
+        const h = calcH(compass.x, compass.y);
+        const ang = Math.atan2(-h.y, h.x);
+
+        ctx.save();
+        ctx.translate(cp.x, cp.y);
+        ctx.beginPath();
+        ctx.arc(0, 0, 20, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.fill();
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.rotate(ang);
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath(); ctx.moveTo(0, -3); ctx.lineTo(16, 0); ctx.lineTo(0, 3); ctx.fill();
+        ctx.fillStyle = '#e2e8f0';
+        ctx.beginPath(); ctx.moveTo(0, -3); ctx.lineTo(-16, 0); ctx.lineTo(0, 3); ctx.fill();
+        ctx.restore();
+
+        ctx.font = '10px monospace';
+        ctx.fillStyle = '#38bdf8';
+        ctx.textAlign = 'center';
+        ctx.fillText(`H = ${h.mag.toFixed(1)} A/m`, cp.x, cp.y + 32);
+      }
+
+      ctx.restore();
+      requestAnimationFrame(render);
+    }
+    render();
+    updateMath();
+
+    // Mouse handlers
+    canvas.addEventListener('mousedown', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const wp = screenToWorld(mx, my);
+
+      if (compass.visible) {
+        const cp = worldToScreen(compass.x, compass.y);
+        if (Math.hypot(mx - cp.x, my - cp.y) <= 22) {
+          dragging = 'compass';
+          return;
+        }
+      }
+
+      for (const w of wires) {
+        const p = worldToScreen(w.x, w.y);
+        if (Math.hypot(mx - p.x, my - p.y) <= 22) {
+          dragging = { type: 'wire', id: w.id };
+          return;
+        }
+      }
+
+      const rh = worldToScreen(loop.x + loop.radius, loop.y);
+      if (Math.hypot(mx - rh.x, my - rh.y) <= 16) {
+        dragging = 'loop-radius';
+        return;
+      }
+
+      const lp = worldToScreen(loop.x, loop.y);
+      if (Math.hypot(mx - lp.x, my - lp.y) <= loop.radius * scale) {
+        dragging = 'loop-center';
+        return;
+      }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!dragging) return;
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const wp = screenToWorld(mx, my);
+
+      if (dragging === 'compass') {
+        compass.x = wp.x;
+        compass.y = wp.y;
+      } else if (dragging === 'loop-center') {
+        loop.x = wp.x;
+        loop.y = wp.y;
+      } else if (dragging === 'loop-radius') {
+        const dx = wp.x - loop.x;
+        const dy = wp.y - loop.y;
+        loop.radius = Math.max(0.2, Math.min(1.5, Math.hypot(dx, dy)));
+        document.getElementById('radiusSlider').value = Math.round(loop.radius * 100);
+        document.getElementById('radiusLabel').textContent = Math.round(loop.radius * 100) + ' cm';
+      } else if (dragging.type === 'wire') {
+        const target = wires.find(w => w.id === dragging.id);
+        if (target) {
+          target.x = wp.x;
+          target.y = wp.y;
+        }
+      }
+      updateMath();
+    });
+
+    window.addEventListener('mouseup', () => { dragging = null; });
+
+    document.getElementById('radiusSlider').addEventListener('input', (e) => {
+      loop.radius = parseFloat(e.target.value) / 100;
+      document.getElementById('radiusLabel').textContent = e.target.value + ' cm';
+      updateMath();
+    });
+
+    document.getElementById('btnCompass').addEventListener('click', () => {
+      compass.visible = !compass.visible;
+      document.getElementById('btnCompass').textContent = compass.visible ? '🧭 Hide Compass' : '🧭 Show Compass';
+    });
+
+    document.getElementById('btnLoopDir').addEventListener('click', () => {
+      loop.direction = loop.direction === 1 ? -1 : 1;
+      document.getElementById('btnLoopDir').textContent = loop.direction === 1 ? 'Direction: CCW ↺' : 'Direction: CW ↻';
+      updateMath();
+    });
+
+    document.getElementById('btnAddWire').addEventListener('click', () => {
+      wires.push({
+        id: 'w_' + Date.now(),
+        x: (Math.random() - 0.5) * 1.5,
+        y: (Math.random() - 0.5) * 1.5,
+        current: 10.0,
+        label: 'Wire ' + (wires.length + 1)
+      });
+      updateMath();
+    });
+
+    function loadPreset(name) {
+      if (name === 'single') {
+        wires = [{ id: 'w1', x: 0, y: 0, current: 10, label: 'Wire 1' }];
+        loop.x = 0; loop.y = 0; loop.radius = 0.65;
+      } else if (name === 'dipole') {
+        wires = [
+          { id: 'w1', x: -0.35, y: 0, current: 10, label: 'Wire A (+10A)' },
+          { id: 'w2', x: 0.35, y: 0, current: -10, label: 'Wire B (-10A)' }
+        ];
+        loop.x = 0; loop.y = 0; loop.radius = 0.8;
+      } else if (name === 'external') {
+        wires = [{ id: 'w1', x: 1.0, y: 0, current: 15, label: 'Outside Wire' }];
+        loop.x = -0.3; loop.y = 0; loop.radius = 0.55;
+      } else if (name === 'parallel') {
+        wires = [
+          { id: 'w1', x: -0.35, y: 0, current: 5, label: 'Wire 1 (+5A)' },
+          { id: 'w2', x: 0.35, y: 0, current: 5, label: 'Wire 2 (+5A)' }
+        ];
+        loop.x = 0; loop.y = 0; loop.radius = 0.8;
+      }
+      document.getElementById('radiusSlider').value = Math.round(loop.radius * 100);
+      document.getElementById('radiusLabel').textContent = Math.round(loop.radius * 100) + ' cm';
+      updateMath();
+    }
+  </script>
+</body>
+</html>
